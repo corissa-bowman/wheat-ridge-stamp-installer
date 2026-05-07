@@ -64,9 +64,12 @@ if exist "%ACROBAT_PARENT%\" (
 
 if %VERSION_COUNT% EQU 0 (
     echo   No existing Acrobat user folders found.
-    echo   Falling back to default ^(Acrobat DC^).
+    echo   Pre-installing for DC, 2020, and 2017 so the stamp
+    echo   is ready whichever version is launched first.
     echo.
     call :install_one "DC"
+    call :install_one "2020"
+    call :install_one "2017"
 )
 
 REM --- 4. Summary ---

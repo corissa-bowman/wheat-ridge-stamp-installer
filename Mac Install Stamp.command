@@ -68,8 +68,9 @@ fi
 
 if [ ${#VERSIONS[@]} -eq 0 ]; then
     echo "  No existing Acrobat user folders found."
-    echo "  Falling back to default (Acrobat DC)."
-    VERSIONS=( "DC" )
+    echo "  Pre-installing for DC, 2020, and 2017 so the stamp"
+    echo "  is ready whichever version is launched first."
+    VERSIONS=( "DC" "2020" "2017" )
 else
     echo "  Found ${#VERSIONS[@]} version(s): ${VERSIONS[*]}"
 fi
