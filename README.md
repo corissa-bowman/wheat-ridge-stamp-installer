@@ -12,8 +12,30 @@ Click the green **Code** button above → **Download ZIP**, then unzip the folde
 
 1. Open the unzipped folder.
 2. Double-click **`Mac Install Stamp.command`**.
-3. If macOS blocks it ("cannot be opened because it is from an unidentified developer"), **right-click** the file → **Open** → click **Open** in the dialog. You only need to do this the first time.
-4. Follow the prompts. The installer will close Acrobat, copy the stamp into the right folder, and tell you when it's done.
+3. Follow the prompts. The installer will close Acrobat, copy the stamp into the right folder, and tell you when it's done.
+
+#### If macOS blocks it ("Apple could not verify... is free of malware")
+
+This happens because the script is not code-signed. You need to do this once per download:
+
+**Option A — System Settings (no Terminal):**
+
+1. Click **Done** on the warning dialog (do **not** click Move to Trash).
+2. Open **System Settings → Privacy & Security**.
+3. Scroll down to the **Security** section. You'll see a message that the script was blocked.
+4. Click **Open Anyway** and authenticate with Touch ID or your password.
+5. Double-click `Mac Install Stamp.command` again. This time confirm by clicking **Open** in the dialog.
+
+**Option B — Terminal one-liner:**
+
+1. Open **Terminal** (Applications → Utilities → Terminal, or press `Cmd+Space` and type "Terminal").
+2. Paste the command below and press Enter (drag the file into Terminal to fill in the path automatically):
+
+   ```bash
+   xattr -d com.apple.quarantine "/path/to/Mac Install Stamp.command"
+   ```
+
+3. Double-click the installer normally — it'll run without any warning.
 
 ### Windows
 
