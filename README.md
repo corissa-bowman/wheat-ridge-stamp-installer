@@ -11,14 +11,14 @@ Click the green **Code** button above → **Download ZIP**, then unzip the folde
 ### Mac
 
 1. Open the unzipped folder.
-2. Double-click **`Install Wheat Ridge Stamp.command`**.
+2. Double-click **`Mac Install Stamp.command`**.
 3. If macOS blocks it ("cannot be opened because it is from an unidentified developer"), **right-click** the file → **Open** → click **Open** in the dialog. You only need to do this the first time.
 4. Follow the prompts. The installer will close Acrobat, copy the stamp into the right folder, and tell you when it's done.
 
 ### Windows
 
 1. Open the unzipped folder.
-2. Double-click **`Install Wheat Ridge Stamp.bat`**.
+2. Double-click **`Windows Install Stamp.bat`**.
 3. If SmartScreen warns you, click **More info** → **Run anyway**.
 4. Follow the prompts.
 
@@ -36,8 +36,8 @@ If the stamp doesn't show up in the menu, fully quit Acrobat and reopen it — A
 
 | File | Purpose |
 | --- | --- |
-| `Install Wheat Ridge Stamp.command` | Mac installer (double-click) |
-| `Install Wheat Ridge Stamp.bat` | Windows installer (double-click) |
+| `Mac Install Stamp.command` | Mac installer (double-click) |
+| `Windows Install Stamp.bat` | Windows installer (double-click) |
 | `Wheat Ridge Building Approval Stamp.pdf` | The stamp itself |
 | `Stamp_Installation_Guide.docx` | Full manual install guide and troubleshooting |
 
