@@ -1,0 +1,14 @@
+# Force Windows-style line endings for .bat files so cmd.exe can parse them
+# correctly on any machine that downloads or clones this repo.
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+
+# Keep Mac shell scripts as Unix line endings.
+*.command    text eol=lf
+*.sh         text eol=lf
+
+# Treat installer assets as binary so git doesn't touch them.
+*.pdf        binary
+*.docx       binary
+*.png        binary
+*.psd        binary
