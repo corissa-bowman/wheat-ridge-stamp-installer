@@ -5,10 +5,6 @@ REM ============================================================
 REM  Double-click this file to install the stamp.
 REM  It must live in the same folder as
 REM  "Wheat Ridge Building Approval Stamp.pdf".
-REM
-REM  Installs into every Adobe Acrobat / Reader version detected
-REM  on this PC (DC, 2020, 2017, 11.0, etc.). If no version has
-REM  been launched yet, falls back to the DC stamps folder.
 REM ============================================================
 
 setlocal EnableExtensions
@@ -21,6 +17,9 @@ set "ACROBAT_PARENT=%APPDATA%\Adobe\Acrobat"
 echo ============================================================
 echo   Wheat Ridge Building Approval Stamp - Installer
 echo ============================================================
+echo.
+echo   Source:        %SOURCE_PATH%
+echo   Acrobat data:  %ACROBAT_PARENT%
 echo.
 
 REM --- 1. Verify stamp PDF is alongside the installer ---
@@ -39,49 +38,47 @@ if not exist "%SOURCE_PATH%" (
 
 REM --- 2. Quit Acrobat / Reader so it picks up the new stamp on next launch ---
 echo Step 1 of 3: Closing Adobe Acrobat / Reader (if running)...
-taskkill /IM Acrobat.exe /F  >/dev/null 2>&1
-taskkill /IM AcroRd32.exe /F >/dev/null 2>&1
-taskkill /IM AcroCEF.exe /F  >/dev/null 2>&1
-taskkill /IM Reader.exe /F   >/dev/null 2>&1
-timeout /t 1 /nobreak >/dev/null 2>&1
+taskkill /IM Acrobat.exe /F  >nul 2>&1
+taskkill /IM AcroRd32.exe /F >nul 2>&1
+taskkill /IM AcroCEF.exe /F  >nul 2>&1
+taskkill /IM Reader.exe /F   >nul 2>&1
+ping -n 2 127.0.0.1 >nul 2>&1
 echo   Done.
 echo.
 
-REM --- 3. Detect installed Acrobat versions and install the stamp ---
-echo Step 2 of 3: Detecting installed Acrobat versions...
+REM --- 3. Try every known Acrobat version folder + any others detected ---
+echo Step 2 of 3: Installing stamp into every Acrobat version folder...
 echo.
 
 set /a INSTALLED_COUNT=0
 set /a FAILED_COUNT=0
-set /a VERSION_COUNT=0
 
+REM Always attempt these three known versions (creates folder if missing).
+call :do_install "DC"
+call :do_install "2020"
+call :do_install "2017"
+call :do_install "11.0"
+
+REM Also catch any other version folders that exist (e.g., future versions).
 if exist "%ACROBAT_PARENT%\" (
-    for /d %%V in ("%ACROBAT_PARENT%\*") do (
-        set /a VERSION_COUNT+=1
-        call :install_one "%%~nxV"
+    pushd "%ACROBAT_PARENT%" >nul 2>&1
+    if not errorlevel 1 (
+        for /f "delims=" %%V in ('dir /b /ad 2^>nul') do (
+            if /i not "%%V"=="DC"   if /i not "%%V"=="2020" if /i not "%%V"=="2017" if /i not "%%V"=="11.0" call :do_install "%%V"
+        )
+        popd >nul 2>&1
     )
 )
 
-if %VERSION_COUNT% EQU 0 (
-    echo   No existing Acrobat user folders found.
-    echo   Pre-installing for DC, 2020, and 2017 so the stamp
-    echo   is ready whichever version is launched first.
-    echo.
-    call :install_one "DC"
-    call :install_one "2020"
-    call :install_one "2017"
-)
-
-REM --- 4. Summary ---
 echo ============================================================
 if %FAILED_COUNT% EQU 0 (
-    echo   Success! Installed into %INSTALLED_COUNT% Acrobat version^(s^).
+    echo   Success! Installed into %INSTALLED_COUNT% Stamps folder^(s^).
 ) else (
     echo   Done. Installed: %INSTALLED_COUNT%  ^|  Failed: %FAILED_COUNT%
 )
 echo ============================================================
 echo.
-echo Next steps:
+echo Step 3 of 3: Next steps for the user
 echo.
 echo   1. Open Adobe Acrobat or Reader.
 echo   2. Go to Edit ^> Preferences ^> Identity (Ctrl+K)
@@ -98,40 +95,42 @@ pause
 if %FAILED_COUNT% GTR 0 ( exit /b 1 )
 exit /b 0
 
+
 REM ============================================================
-REM  Subroutine: install_one  <version-folder-name>
-REM  Copies the stamp into %ACROBAT_PARENT%\<version>\Stamps,
-REM  creating the folder if needed.
+REM  Subroutine: do_install  <version-folder-name>
+REM  Creates %ACROBAT_PARENT%\<version>\Stamps if missing,
+REM  copies the stamp PDF into it, and prints what it did.
 REM ============================================================
-:install_one
+:do_install
 set "VER=%~1"
 set "STAMPS_DIR=%ACROBAT_PARENT%\%VER%\Stamps"
 set "DEST_PATH=%STAMPS_DIR%\%STAMP_FILE%"
 
 echo   [%VER%]
+echo     Target: %DEST_PATH%
 
 if not exist "%STAMPS_DIR%\" (
-    mkdir "%STAMPS_DIR%" >/dev/null 2>&1
-    if errorlevel 1 (
-        echo     ERROR: Could not create %STAMPS_DIR%
+    mkdir "%STAMPS_DIR%" 2>nul
+    if not exist "%STAMPS_DIR%\" (
+        echo     ERROR: Could not create folder.
         set /a FAILED_COUNT+=1
         echo.
         goto :eof
     )
-    echo     Created Stamps folder.
+    echo     Created folder.
 )
 
-if exist "%DEST_PATH%" (
-    echo     Replacing existing stamp with the latest version...
-)
+if exist "%DEST_PATH%" echo     Replacing existing stamp...
 
-copy /Y "%SOURCE_PATH%" "%DEST_PATH%" >/dev/null 2>&1
-if errorlevel 1 (
-    echo     ERROR: Could not copy stamp to %DEST_PATH%
+copy /Y "%SOURCE_PATH%" "%DEST_PATH%" >nul
+if not exist "%DEST_PATH%" (
+    echo     ERROR: Copy did not produce destination file.
     set /a FAILED_COUNT+=1
-) else (
-    echo     Installed: %DEST_PATH%
-    set /a INSTALLED_COUNT+=1
+    echo.
+    goto :eof
 )
+
+echo     OK.
+set /a INSTALLED_COUNT+=1
 echo.
 goto :eof
